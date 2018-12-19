@@ -1,0 +1,72 @@
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type=text/javascript>
+        $(function() {
+          $('a#upid').bind('click', function() {
+            $.post('/background_process_test',{direction: "up"}, function(data) {
+              //do nothing
+            });
+            return false;
+          });
+          $('a#downid').bind('click', function() {
+            $.post('/background_process_test',{direction: "down"}, function(data) {
+              //do nothing
+            });
+            return false;
+          });
+          $('a#leftid').bind('click', function() {
+            $.post('/background_process_test',{direction: "left"}, function(data) {
+              //do nothing
+            });
+            return false;
+          });
+          $('a#rightid').bind('click', function() {
+            $.post('/background_process_test',{direction: "right"}, function(data) {
+              //do nothing
+            });
+            return false;
+          });
+        });
+</script>
+
+<html>
+  <head>
+    <title>Pi3 Drone Control</title>
+  </head>
+  <body>
+    <h1 style="text-align: center;">AR Drone Camera Video</h1>
+    <center><img src="{{ url_for('video_feed') }}"></img></center>
+    <div class='container'>
+    <form>
+    <table style="height: 111px; margin-left: auto; margin-right: auto;" width="287">
+    <tbody>
+      <tr>
+      <td style="width: 88px;">&nbsp;</td>
+      <td style="text-align: center;"><a href=# id=upid><input type="image" name="direction" value="up" src="/pic/arrow_button_metal_green_up.png" border="0" alt="UP" style="width: 88px;" /></a></td>
+      <td style="width: 89px;">&nbsp;</td>
+      </tr>
+      <tr>
+      <td style="text-align: center;"><a href=# id=leftid><input type="image" name="direction" value="left" src="/pic/arrow_button_metal_green_left.png" border="0" alt="LEFT" style="width: 88px;" /></a></td>
+      <td style="width: 88px;">&nbsp;</td>
+      <td style="text-align: center;"><a href=# id=rightid><input type="image" name="direction" value="right" src="/pic/arrow_button_metal_green_right.png" border="0" alt="RIGHT" style="width: 88px;" /></a></td>
+      </tr>
+      <tr>
+      <td style="width: 88px;">&nbsp;</td>
+      <td style="text-align: center;"><a href=# id=downid><input type="image" name="direction" value="down" src="/pic/arrow_button_metal_green_down.png" border="0" alt="DOWN" style="width: 88px;" /></a></td>
+      <td style="width: 89px;">&nbsp;</td>
+      </tr>
+    </tbody>
+    </table>
+    <table style="height: 31px; margin-left: auto; margin-right: auto;" width="411">
+    <tbody>
+      <tr>
+      <td style="text-align: center;"><button type="submit" style="width: 100px; color: green;" value="takeoff"><b>TAKEOFF</b></button></td>
+      <td style="text-align: center;"><button type="submit" style="width: 100px; color: blue;" value="land"><b>LAND</b></button></td>
+      <td style="text-align: center;"><button type="submit" style="width: 100px; color: red;" value="emergency"><b>EMERGENCY</b></button></td>
+      <td style="text-align: center;"><button type="submit" style="width: 100px; color: cyan;" value="trim"><b>FLAT TRIM</b></button></td>
+      </tr>
+    </tbody>
+    </table>
+    </form>
+    </div>
+  </body>
+</html>
