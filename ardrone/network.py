@@ -8,12 +8,13 @@ import struct
 import threading
 import multiprocessing
 
-import PIL.Image
+import pygame
+import cv2
 
 import ardrone.constant
 import ardrone.navdata
-import ardrone.video
-
+# import ardrone.video
+import arvideo              # use AR Drone 1.0 video lib
 
 class ARDroneNetworkProcess(multiprocessing.Process):
     """ARDrone Network Process.
@@ -30,8 +31,10 @@ class ARDroneNetworkProcess(multiprocessing.Process):
         self.host = host
 
     def run(self):
-        video_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        video_socket.connect((self.host, ardrone.constant.VIDEO_PORT))
+        video_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        video_socket.setblocking(False)
+        video_socket.bind(('', libardrone.ARDRONE_VIDEO_PORT))
+        video_socket.sendto("\x01\x00\x00\x00", (self.host, libardrone.ARDRONE_VIDEO_PORT))
 
         nav_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         nav_socket.setblocking(False)
@@ -43,27 +46,15 @@ class ARDroneNetworkProcess(multiprocessing.Process):
             inputready, outputready, exceptready = select.select([nav_socket, video_socket, self.com_pipe], [], [])
             for i in inputready:
                 if i == video_socket:
-                    # get first few bytes of header
-                    data = video_socket.recv(12, socket.MSG_WAITALL)
-                    if len(data) != 12:
-                        continue
-
-                    # decode relevant portions of the header
-                    sig_p, sig_a, sig_v, sig_e, version, codec, header, payload = struct.unpack('4cBBHI', data)
-
-                    # check signature (and ignore packet otherwise)
-                    if sig_p != b'P' or sig_a != b'a' or sig_v != b'V' or sig_e != b'E':
-                        continue
-
-                    # get remaining frame
-                    data += video_socket.recv(header - 12 + payload, socket.MSG_WAITALL)
-
-                    try:
-                        # decode the frame
-                        image = ardrone.video.decode(data)
-                        self.video_pipe.send(image)
-                    except ardrone.video.DecodeError:
-                        pass
+                    while 1:
+                        try:
+                            data = video_socket.recv(65535)
+                        except IOError:
+                            # we consumed every packet from the socket and
+                            # continue with the last one
+                            break
+                    w, h, image, t = arvideo.read_picture(data)
+                    self.video_pipe.send(image)
                 elif i == nav_socket:
                     while 1:
                         try:
@@ -100,8 +91,11 @@ class IPCThread(threading.Thread):
             for i in inputready:
                 if i == self.drone.video_pipe:
                     while self.drone.video_pipe.poll():
-                        width, height, image = self.drone.video_pipe.recv()
-                    self.drone.image = PIL.Image.frombuffer('RGB', (width, height), image, 'raw', 'RGB', 0, 1)
+                        image = self.drone.video_pipe.recv()
+                    surface = pygame.image.fromstring(image, (320, 240), 'RGB')
+                    color_image = pygame.surfarray.array3d(surface)
+                    color_image = cv2.transpose(color_image)
+                    self.drone.image = cv2.cvtColor(color_image, cv2.COLOR_RGB2BGR)
                 elif i == self.drone.nav_pipe:
                     while self.drone.nav_pipe.poll():
                         navdata = self.drone.nav_pipe.recv()

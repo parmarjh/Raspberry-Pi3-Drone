@@ -1,31 +1,14 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type=text/javascript>
-        $(function() {
-          $('a#upid').bind('click', function() {
-            $.post('/background_process_test',{direction: "up"}, function(data) {
-              //do nothing
-            });
-            return false;
-          });
-          $('a#downid').bind('click', function() {
-            $.post('/background_process_test',{direction: "down"}, function(data) {
-              //do nothing
-            });
-            return false;
-          });
-          $('a#leftid').bind('click', function() {
-            $.post('/background_process_test',{direction: "left"}, function(data) {
-              //do nothing
-            });
-            return false;
-          });
-          $('a#rightid').bind('click', function() {
-            $.post('/background_process_test',{direction: "right"}, function(data) {
-              //do nothing
-            });
-            return false;
-          });
-        });
+
+$(document).ready(function(){
+  $(":image").click(function(){
+    var txt = $(":image").val();
+    $.post("/background_process_test", {direction: txt}, function(result){
+    });
+  });
+});
+
 </script>
 
 <html>
@@ -33,36 +16,44 @@
     <title>Pi3 Drone Control</title>
   </head>
   <body>
-    <h1 style="text-align: center;">AR Drone Camera Video</h1>
-    <center><img src="{{ url_for('video_feed') }}"></img></center>
+    <h1 style="text-align: center;">Pi HiRes Camera Video</h1>
+    <center><img src="{{ url_for('video_feed') }}"></img></center><br>
+    <h2 style="text-align: center;">AR Drone Camera Video</h2>
+    <center><img src="{{ url_for('drone_feed') }}"></img></center><br>
     <div class='container'>
     <form>
     <table style="height: 111px; margin-left: auto; margin-right: auto;" width="287">
     <tbody>
       <tr>
-      <td style="width: 88px;">&nbsp;</td>
-      <td style="text-align: center;"><a href=# id=upid><input type="image" name="direction" value="up" src="/pic/arrow_button_metal_green_up.png" border="0" alt="UP" style="width: 88px;" /></a></td>
-      <td style="width: 89px;">&nbsp;</td>
+      <td colspan="3"><b><input type="text" id="navdata" value="NO NAVDATA" readonly></b></td>
       </tr>
       <tr>
-      <td style="text-align: center;"><a href=# id=leftid><input type="image" name="direction" value="left" src="/pic/arrow_button_metal_green_left.png" border="0" alt="LEFT" style="width: 88px;" /></a></td>
-      <td style="width: 88px;">&nbsp;</td>
-      <td style="text-align: center;"><a href=# id=rightid><input type="image" name="direction" value="right" src="/pic/arrow_button_metal_green_right.png" border="0" alt="RIGHT" style="width: 88px;" /></a></td>
+      <td style="text-align: center;"><input type="image" value="up" src="/pic/up-circle-3-512.png" border="0" alt="UP" style="width: 88px;" />;</td>
+      <td style="text-align: center;"><input type="image" value="forward" src="/pic/arrow_button_metal_green_up.png" border="0" alt="FORWARD" style="width: 88px;" /></td>
+      <td style="text-align: center;"><input type="image" value="down" src="/pic/down-circle-3-512.png" border="0" alt="DOWN" style="width: 88px;" />;</td>
       </tr>
       <tr>
-      <td style="width: 88px;">&nbsp;</td>
-      <td style="text-align: center;"><a href=# id=downid><input type="image" name="direction" value="down" src="/pic/arrow_button_metal_green_down.png" border="0" alt="DOWN" style="width: 88px;" /></a></td>
-      <td style="width: 89px;">&nbsp;</td>
+      <td style="text-align: center;"><input type="image" value="left" src="/pic/arrow_button_metal_green_left.png" border="0" alt="LEFT" style="width: 88px;" /></td>
+      <td style="text-align: center;"><input type="image" value="hover" src="/pic/up-circle-1-512.png" border="0" alt="HOVER" style="width: 88px;" /></td>
+      <td style="text-align: center;"><input type="image" value="right" src="/pic/arrow_button_metal_green_right.png" border="0" alt="RIGHT" style="width: 88px;" /></td>
+      </tr>
+      <tr>
+      <td style="text-align: center;"><input type="image" value="rotleft" src="/pic/OutlineRotationArrowLeft-512.png" border="0" alt="ROTATE LEFT" style="width: 88px;" /></td>
+      <td style="text-align: center;"><input type="image" value="backward" src="/pic/arrow_button_metal_green_down.png" border="0" alt="BACKWARD" style="width: 88px;" /></td>
+      <td style="text-align: center;"><input type="image" value="rotright" src="/pic/OutlineRotationArrowRight-512.png" border="0" alt="ROTATE RIGHT" style="width: 88px;" /></td>
       </tr>
     </tbody>
     </table>
     <table style="height: 31px; margin-left: auto; margin-right: auto;" width="411">
     <tbody>
       <tr>
-      <td style="text-align: center;"><button type="submit" style="width: 100px; color: green;" value="takeoff"><b>TAKEOFF</b></button></td>
-      <td style="text-align: center;"><button type="submit" style="width: 100px; color: blue;" value="land"><b>LAND</b></button></td>
-      <td style="text-align: center;"><button type="submit" style="width: 100px; color: red;" value="emergency"><b>EMERGENCY</b></button></td>
-      <td style="text-align: center;"><button type="submit" style="width: 100px; color: cyan;" value="trim"><b>FLAT TRIM</b></button></td>
+      <td style="text-align: center;"><input type="image" value="takeoff" src="/pic/_departure-512.png" border="0" alt="TAKEOFF" style="width: 88px;" /></td>
+      <td style="text-align: center;"><input type="image" value="land" src="/pic/_arrival-512.png" border="0" alt="LAND" style="width: 88px;" /></td>
+      <td style="text-align: center;"><input type="image" value="emergency" src="/pic/plane_crash-512.png" border="0" alt="EMERGENCY" style="width: 88px;" /></td>
+      <td style="text-align: center;"><input type="image" value="trim" src="/pic/info-2-512.png" border="0" alt="TRIM" style="width: 88px;" /></td>
+      </tr>
+      <tr>
+      <td colspan="4" style="text-align: center;"><input type="image" value="exit" src="/pic/logout-1-512.png" border="0" alt="TRIM" style="width: 88px;" /></td>
       </tr>
     </tbody>
     </table>

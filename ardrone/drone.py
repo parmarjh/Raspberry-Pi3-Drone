@@ -5,8 +5,7 @@ Python library for the AR.Drone.
 import time
 import threading
 import multiprocessing
-
-import PIL.Image
+import numpy as np
 
 import ardrone.at
 import ardrone.network
@@ -36,7 +35,7 @@ class ARDrone(object):
         self.network_process.start()
         self.ipc_thread = ardrone.network.IPCThread(self)
         self.ipc_thread.start()
-        self.image = PIL.Image.new('RGB', (640, 360))
+        self.image = np.zeros((240, 320, 3), np.uint8)  # Initialize a cv image...
         self.navdata = dict()
         self.time = 0
 

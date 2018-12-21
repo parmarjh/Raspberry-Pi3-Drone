@@ -8,6 +8,7 @@ except ImportError:
     except ImportError:
         from _thread import get_ident
 
+import cv2
 
 class CameraEvent(object):
     """An Event-like class that signals all active clients when a new frame is
@@ -82,8 +83,16 @@ class BaseCamera(object):
 
     @staticmethod
     def frames():
-        """"Generator that returns frames from the camera."""
-        raise RuntimeError('Must be implemented by subclasses.')
+        camera = cv2.VideoCapture(0)   # Hard coded only 1 camera and at index 0
+        if not camera.isOpened():
+            raise RuntimeError('Could not start camera.')
+
+        while True:
+            # read current frame
+            _, img = camera.read()
+
+            # encode as a jpeg image and return it
+            yield cv2.imencode('.jpg', img)[1].tobytes()
 
     @classmethod
     def _thread(cls):
